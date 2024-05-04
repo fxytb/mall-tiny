@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
@@ -35,10 +36,22 @@ public class MallTinyController {
      *
      * @return 品牌信息
      */
-    @GetMapping("/listPmsBrandByPage")
-    private CommonResult<PageInfo<PmsBrandVo>> listPmsBrandByPage(PageQuery<PmsBrandQueryParam> pageQuery) {
+    @PostMapping("/listPmsBrandByPage")
+    private CommonResult<PageInfo<PmsBrandVo>> listPmsBrandByPage(@RequestBody @Validated PageQuery<PmsBrandQueryParam> pageQuery) {
         return pmsBrandService.listPmsBrandByPage(pageQuery);
     }
+
+
+    /**
+     * 根据ID查询品牌
+     *
+     * @return 品牌信息
+     */
+    @PostMapping("/listPmsBrandById")
+    private CommonResult<PmsBrandVo> listPmsBrandById(@RequestBody @Validated PmsBrandIdQueryParam idQueryParam) {
+        return pmsBrandService.listPmsBrandById(idQueryParam);
+    }
+
 
     /**
      * 新增品牌
