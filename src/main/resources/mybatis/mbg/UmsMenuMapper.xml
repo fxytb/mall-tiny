@@ -104,23 +104,22 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.fxytb.malltiny.model.po.mbg.UmsMenu">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
-      id
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into ums_menu (id, parent_id, create_time, 
-      title, level, sort, 
-      name, icon, hidden)
-    values (#{id,jdbcType=BIGINT}, #{parentId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{title,jdbcType=VARCHAR}, #{level,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 
-      #{name,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, #{hidden,jdbcType=INTEGER})
+    insert into ums_menu (parent_id, create_time, title, 
+      level, sort, name, 
+      icon, hidden)
+    values (#{parentId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{title,jdbcType=VARCHAR}, 
+      #{level,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{icon,jdbcType=VARCHAR}, #{hidden,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.fxytb.malltiny.model.po.mbg.UmsMenu">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
-      id
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
     </selectKey>
     insert into ums_menu
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      id,
       <if test="parentId != null">
         parent_id,
       </if>
@@ -147,7 +146,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      #{id,jdbcType=BIGINT},
       <if test="parentId != null">
         #{parentId,jdbcType=BIGINT},
       </if>

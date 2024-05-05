@@ -3,11 +3,15 @@ package com.fxytb.malltiny.common.result;
 import cn.hutool.core.util.ArrayUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @ApiModel(value = "方法公共返回类", description = "方法公共返回类")
 public class CommonResult<T> {
 
@@ -63,6 +67,20 @@ public class CommonResult<T> {
                 .data(null)
                 .code(400)
                 .messageType("error")
+                .build();
+    }
+
+    public static <T> CommonResult<T> result(Boolean successful,
+                                             String message,
+                                             T data,
+                                             Integer code,
+                                             String messageType) {
+        return CommonResult.<T>builder()
+                .successful(successful)
+                .message(message)
+                .data(data)
+                .code(code)
+                .messageType(messageType)
                 .build();
     }
 

@@ -1,9 +1,5 @@
 spring:
   application:
-   name: mall-tiny
+    name: mall-tiny
 server:
   port: 8082
-mybatis:
-  mapper-locations:
-    - classpath:mybatis/*.xml
-    - classpath:mybatis/**/*.xml

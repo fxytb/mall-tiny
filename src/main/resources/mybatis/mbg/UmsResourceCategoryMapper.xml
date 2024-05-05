@@ -99,21 +99,20 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.fxytb.malltiny.model.po.mbg.UmsResourceCategory">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
-      id
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into ums_resource_category (id, create_time, name, 
-      sort)
-    values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{name,jdbcType=VARCHAR}, 
-      #{sort,jdbcType=INTEGER})
+    insert into ums_resource_category (create_time, name, sort
+      )
+    values (#{createTime,jdbcType=TIMESTAMP}, #{name,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.fxytb.malltiny.model.po.mbg.UmsResourceCategory">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
-      id
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
     </selectKey>
     insert into ums_resource_category
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      id,
       <if test="createTime != null">
         create_time,
       </if>
@@ -125,7 +124,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      #{id,jdbcType=BIGINT},
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
       </if>

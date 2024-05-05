@@ -43,7 +43,7 @@
         <javaClientGenerator type="XMLMAPPER" targetPackage="com.fxytb.malltiny.dao.mbg"
                              targetProject="./src/main/java"/>
         <table tableName="%">
-            <generatedKey column="id" sqlStatement="id"/>
+            <generatedKey column="id" sqlStatement="SELECT LAST_INSERT_ID()" identity="true"/>
         </table>
     </context>
 </generatorConfiguration>

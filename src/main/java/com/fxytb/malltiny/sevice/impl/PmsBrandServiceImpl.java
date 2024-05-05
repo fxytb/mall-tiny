@@ -73,10 +73,10 @@ public class PmsBrandServiceImpl implements PmsBrandService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CommonResult<String> addPmsBrand(PmsBrandAddParam addParam) {
+    public CommonResult<PmsBrandVo> addPmsBrand(PmsBrandAddParam addParam) {
         try {
-            PmsBrand build = PmsBrand.builder().id(IdUtil.getSnowflake().nextId()).name(addParam.getName()).firstLetter(addParam.getFirstLetter()).sort(addParam.getSort()).factoryStatus(addParam.getFactoryStatus()).showStatus(addParam.getShowStatus()).productCount(0).productCommentCount(0).logo(addParam.getLogo()).bigPic(addParam.getBigPic()).brandStory(addParam.getBrandStory()).build();
-            return pmsBrandMapper.insertSelective(build) == 1 ? CommonResult.success("品牌新增成功") : CommonResult.warn("品牌新增失败");
+            PmsBrand build = PmsBrand.builder().name(addParam.getName()).firstLetter(addParam.getFirstLetter()).sort(addParam.getSort()).factoryStatus(addParam.getFactoryStatus()).showStatus(addParam.getShowStatus()).productCount(0).productCommentCount(0).logo(addParam.getLogo()).bigPic(addParam.getBigPic()).brandStory(addParam.getBrandStory()).build();
+            return pmsBrandMapper.insertSelective(build) == 1 ? CommonResult.success("品牌新增成功", BeanUtil.copyProperties(build, PmsBrandVo.class)) : CommonResult.warn("品牌新增失败");
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error("品牌新增异常,异常信息:{}", e.getMessage(), e);

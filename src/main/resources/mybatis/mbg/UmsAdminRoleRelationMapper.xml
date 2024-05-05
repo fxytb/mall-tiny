@@ -98,21 +98,18 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.fxytb.malltiny.model.po.mbg.UmsAdminRoleRelation">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
-      id
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into ums_admin_role_relation (id, admin_id, role_id
-      )
-    values (#{id,jdbcType=BIGINT}, #{adminId,jdbcType=BIGINT}, #{roleId,jdbcType=BIGINT}
-      )
+    insert into ums_admin_role_relation (admin_id, role_id)
+    values (#{adminId,jdbcType=BIGINT}, #{roleId,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="com.fxytb.malltiny.model.po.mbg.UmsAdminRoleRelation">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
-      id
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
     </selectKey>
     insert into ums_admin_role_relation
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      id,
       <if test="adminId != null">
         admin_id,
       </if>
@@ -121,7 +118,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      #{id,jdbcType=BIGINT},
       <if test="adminId != null">
         #{adminId,jdbcType=BIGINT},
       </if>

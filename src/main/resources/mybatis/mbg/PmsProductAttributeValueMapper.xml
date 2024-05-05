@@ -99,21 +99,20 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.fxytb.malltiny.model.po.mbg.PmsProductAttributeValue">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
-      id
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into pms_product_attribute_value (id, product_id, product_attribute_id, 
-      value)
-    values (#{id,jdbcType=BIGINT}, #{productId,jdbcType=BIGINT}, #{productAttributeId,jdbcType=BIGINT}, 
-      #{value,jdbcType=VARCHAR})
+    insert into pms_product_attribute_value (product_id, product_attribute_id, value
+      )
+    values (#{productId,jdbcType=BIGINT}, #{productAttributeId,jdbcType=BIGINT}, #{value,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.fxytb.malltiny.model.po.mbg.PmsProductAttributeValue">
-    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Long">
-      id
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
     </selectKey>
     insert into pms_product_attribute_value
     <trim prefix="(" suffix=")" suffixOverrides=",">
-      id,
       <if test="productId != null">
         product_id,
       </if>
@@ -125,7 +124,6 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
-      #{id,jdbcType=BIGINT},
       <if test="productId != null">
         #{productId,jdbcType=BIGINT},
       </if>
