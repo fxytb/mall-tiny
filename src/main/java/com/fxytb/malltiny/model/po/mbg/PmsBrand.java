@@ -2,7 +2,6 @@ package com.fxytb.malltiny.model.po.mbg;
 
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -58,12 +58,18 @@ public class RedisController {
     }
 
     @PostMapping("/testUpdateClearRedis")
-    @CacheEvict(value = RedisConfig.REDIS_KEY_DATABASE, key = "'pms:brand:'+#updateParam.id",condition = "#updateParam.id!=null")
+    @CacheEvict(value = RedisConfig.REDIS_KEY_DATABASE, key = "'pms:brand:'+#updateParam.id", condition = "#updateParam.id!=null")
     @ApiOperation(value = "测试更新清除redis", notes = "测试更新清除redis")
     @ApiImplicitParams({@ApiImplicitParam(name = "updateParam", value = "品牌更新参数", required = true)})
     @ApiResponses({@ApiResponse(responseCode = "100", description = "暂无数据"), @ApiResponse(responseCode = "200", description = "品牌数据更新成功")})
     public CommonResult<String> testUpdateClearRedis(@RequestBody @Validated PmsBrandUpdateParam updateParam) {
         return pmsBrandService.updatePmsBrand(updateParam);
+    }
+
+    @PostMapping("/testRedisTemplate")
+    @ApiOperation(value = "测试redisTemplate", notes = "测试redisTemplate")
+    public void testRedisTemplate() {
+        redisService.lPush("mall", "32131",10000);
     }
 
 

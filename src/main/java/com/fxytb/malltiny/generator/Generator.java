@@ -30,7 +30,7 @@ public class Generator {
             myBatisGenerator.generate(null);
             //打印warn日志
             if (!warnings.isEmpty()) {
-                log.warn("mybatis代码生成器执行失败,失败信息:{}", warnings);
+                log.warn("mybatis代码生成器执行失败,警告信息:{}", warnings);
             }
         } catch (Exception e) {
             log.error("mybatis代码生成器执行异常,异常信息:{}", e.getMessage(), e);
