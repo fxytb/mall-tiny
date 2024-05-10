@@ -9,9 +9,12 @@ import java.util.List;
 
 @Data
 @Configuration
-@ConfigurationProperties("secure.ignored")
+@ConfigurationProperties("security.ignore")
 public class IgnoreUrlsConfig {
 
+    /**
+     * 可放过url
+     */
     private List<String> urls = new ArrayList<>();
 
 }

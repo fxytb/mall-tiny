@@ -1,17 +1,23 @@
 package com.fxytb.malltiny.common.utils;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.fxytb.malltiny.common.enums.JwtEnum.CLAIM_KEY_CREATED;
+import static com.fxytb.malltiny.common.enums.JwtEnum.CLAIM_KEY_USERNAME;
 
 /**
  * JwtToken生成的工具类
@@ -22,116 +28,175 @@ import java.util.Map;
  * {"sub":"wang","created":1489079981393,"exp":1489684781}
  * signature的生成算法：
  * HMACSHA512(base64UrlEncode(header) + "." +base64UrlEncode(payload),secret)
- * Created by macro on 2018/4/26.
  */
+@Slf4j
 @Component
+@Setter
 public class JwtTokenUtil {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
-    private static final String CLAIM_KEY_USERNAME = "sub";
-    private static final String CLAIM_KEY_CREATED = "created";
+
+    /**
+     * 密钥
+     */
     @Value("${jwt.secret}")
     private String secret;
+
+    /**
+     * 过期时间(单位秒)
+     */
     @Value("${jwt.expiration}")
     private Long expiration;
 
     /**
-     * 根据负责生成JWT的token
+     * 根据用户信息生成token
+     *
+     * @param user
+     * @return token
      */
-    private String generateToken(Map<String, Object> claims) {
+    public String generatorTokenByUserDetails(UserDetails user) {
+        String token = null;
+        try {
+            Map<String, Object> claims = new HashMap<>();
+            claims.put(CLAIM_KEY_USERNAME.getAttribute(), user.getUsername());
+            claims.put(CLAIM_KEY_CREATED.getAttribute(), DateUtil.date());
+            token = generatorToken(claims);
+            return token;
+        } catch (Exception e) {
+            log.error("用户信息token生成异常,异常信息:{}", e.getMessage(), e);
+            return token;
+        }
+    }
+
+    /**
+     * 根据claim生成token
+     *
+     * @param claims
+     * @return token
+     */
+    private String generatorToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(generateExpirationDate())
+                .setExpiration(generatorExpirationDate())
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
 
+
     /**
-     * 从token中获取JWT中的负载
+     * 从token中获取claims
+     *
+     * @param token
+     * @return claims
      */
     private Claims getClaimsFromToken(String token) {
-        Claims claims = null;
+        Claims body = null;
         try {
-            claims = Jwts.parser()
+            body = Jwts.parser()
                     .setSigningKey(secret)
-                    .parseClaimsJws(token)
-                    .getBody();
+                    .parseClaimsJws(token).getBody();
+            return body;
         } catch (Exception e) {
-            LOGGER.info("JWT格式验证失败:{}",token);
+            log.error("token获取Claim异常,异常信息:{}", e.getMessage(), e);
+            return body;
         }
-        return claims;
     }
 
     /**
-     * 生成token的过期时间
-     */
-    private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + expiration * 1000);
-    }
-
-    /**
-     * 从token中获取登录用户名
-     */
-    public String getUserNameFromToken(String token) {
-        String username;
-        try {
-            Claims claims = getClaimsFromToken(token);
-            username =  claims.getSubject();
-        } catch (Exception e) {
-            username = null;
-        }
-        return username;
-    }
-
-    /**
-     * 验证token是否还有效
+     * 从token中获取用户名称
      *
-     * @param token       客户端传入的token
-     * @param userDetails 从数据库中查询出来的用户信息
+     * @param token
+     * @return 用户名
      */
-    public boolean validateToken(String token, UserDetails userDetails) {
-        String username = getUserNameFromToken(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    public String getUsernameFromToken(String token) {
+        String userName = null;
+        try {
+            Claims claimsFromToken = getClaimsFromToken(token);
+            userName = claimsFromToken.getSubject();
+            return userName;
+        } catch (Exception e) {
+            log.error("token获取用户名称异常,异常信息:{}", e.getMessage(), e);
+            return userName;
+        }
     }
 
     /**
-     * 判断token是否已经失效
-     */
-    private boolean isTokenExpired(String token) {
-        Date expiredDate = getExpiredDateFromToken(token);
-        return expiredDate.before(new Date());
-    }
-
-    /**
-     * 从token中获取过期时间
+     * 从token中获取失效时间
+     *
+     * @param token
+     * @return 失效时间
      */
     private Date getExpiredDateFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.getExpiration();
+        Date expiredDate = null;
+        try {
+            Claims claimsFromToken = getClaimsFromToken(token);
+            expiredDate = claimsFromToken.getExpiration();
+            return expiredDate;
+        } catch (Exception e) {
+            log.error("token获取过期时间异常,异常信息:{}", e.getMessage(), e);
+            return expiredDate;
+        }
     }
 
     /**
-     * 根据用户信息生成token
+     * 生成token过期时间
+     *
+     * @return 过期时间
      */
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
-        claims.put(CLAIM_KEY_CREATED, new Date());
-        return generateToken(claims);
+    private Date generatorExpirationDate() {
+        return DateUtil.date(System.currentTimeMillis() + expiration * 1000);
+    }
+
+    //校验token
+
+    /**
+     * 判断是否有效token
+     *
+     * @param token
+     * @param user
+     * @return 是否有效
+     */
+    public boolean isValidToken(String token, UserDetails user) {
+        String username = getUsernameFromToken(token);
+        Date expiredDate = getExpiredDateFromToken(token);
+        return StrUtil.equals(username, user.getUsername()) && !isExpiredDate(expiredDate);
     }
 
     /**
-     * 判断token是否可以被刷新
+     * 判断是否失效时间
+     *
+     * @param expiredDate
+     * @return 是否失效
      */
-    public boolean canRefresh(String token) {
-        return !isTokenExpired(token);
+    private boolean isExpiredDate(Date expiredDate) {
+        return DateUtil.compare(expiredDate, DateUtil.date()) < 0;
     }
+
+
+    /**
+     * 判断当前token是否可刷新
+     *
+     * @param expiredDate
+     * @return 是否可刷新
+     */
+    private boolean isRefreshableToken(Date expiredDate) {
+        return !isExpiredDate(expiredDate);
+    }
+
+    //刷新token
 
     /**
      * 刷新token
+     *
+     * @param token
      */
-    public String refreshToken(String token) {
+    private void refreshToken(String token) {
         Claims claims = getClaimsFromToken(token);
-        claims.put(CLAIM_KEY_CREATED, new Date());
-        return generateToken(claims);
+        claims.setExpiration(DateUtil.date());
     }
+
+
+    @Bean
+    private Object aa(){
+        return new Date().toString();
+    }
+
 }

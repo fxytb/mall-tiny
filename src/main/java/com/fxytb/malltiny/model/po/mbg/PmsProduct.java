@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PmsProduct implements Serializable {
+
     private Long id;
 
     private Long brandId;

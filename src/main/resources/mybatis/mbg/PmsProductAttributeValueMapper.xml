@@ -7,6 +7,37 @@
     <result column="product_attribute_id" jdbcType="BIGINT" property="productAttributeId" />
     <result column="value" jdbcType="VARCHAR" property="value" />
   </resultMap>
+
+  <!--
+
+      private Long id;
+
+    private Long productId;
+
+    private Long productAttributeId;
+
+    @ApiModelProperty(value = "手动添加规格或参数的值，参数单值，规格有多个时以逗号隔开")
+    @Field(type = FieldType.Keyword)
+    private String value;
+
+    private Integer type;
+
+
+    @Field(type = FieldType.Keyword)
+    private String name;
+
+  -->
+
+  <resultMap id="EsPmsProductAttributeValueMap"
+             type="com.fxytb.malltiny.model.po.elasticsearch.EsPmsProductAttributeValue">
+    <id property="id" column="product_attribute_value_id"/>
+    <result property="productId" column="product_id"/>
+    <result property="productAttributeId" column="product_attribute_id"/>
+    <result property="value" column="value"/>
+    <result property="name" column="name"/>
+    <result property="type" column="type"/>
+  </resultMap>
+
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">

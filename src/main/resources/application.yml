@@ -1,5 +1,6 @@
 spring:
   application:
     name: mall-tiny
+
 server:
   port: 8082

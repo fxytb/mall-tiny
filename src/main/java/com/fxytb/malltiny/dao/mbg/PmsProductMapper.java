@@ -1,5 +1,6 @@
 package com.fxytb.malltiny.dao.mbg;
 
+import com.fxytb.malltiny.model.po.elasticsearch.EsPmsProduct;
 import com.fxytb.malltiny.model.po.mbg.PmsProduct;
 import com.fxytb.malltiny.model.po.mbg.PmsProductExample;
 import java.util.List;
@@ -33,4 +34,8 @@ public interface PmsProductMapper {
     int updateByPrimaryKeyWithBLOBs(PmsProduct row);
 
     int updateByPrimaryKey(PmsProduct row);
+
+    List<EsPmsProduct> queryAllEsPmsProduct();
+
+    EsPmsProduct queryEsPmsProductById(@Param("id") Long id);
 }

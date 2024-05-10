@@ -1,45 +1,34 @@
 package com.fxytb.malltiny.config;
 
-import cn.hutool.core.io.LineHandler;
+import cn.hutool.core.util.ArrayUtil;
 import com.fxytb.malltiny.component.JwtAuthenticationTokenFilter;
 import com.fxytb.malltiny.component.RestAuthenticationEntryPoint;
 import com.fxytb.malltiny.component.RestfulAccessDeniedHandler;
-import com.fxytb.malltiny.model.bo.AdminUserDetails;
-import com.fxytb.malltiny.sevice.UserAdminService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.servlet.Filter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig {
 
-    @Lazy
-    @Autowired
-    private UserAdminService userAdminService;
-
     @Autowired
     private RestfulAccessDeniedHandler restfulAccessDeniedHandler;
 
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @Autowired
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
     @Autowired
     private IgnoreUrlsConfig ignoreUrlsConfig;
@@ -49,33 +38,13 @@ public class SpringSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity httpSecurity) {
 
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = httpSecurity.authorizeRequests();
-        for (String url : ignoreUrlsConfig.getUrls()) {
-            registry.antMatchers(url).permitAll();
-        }
-
         httpSecurity.csrf()
                 .disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET,
-                        "/",
-                        "/swagger-ui/",
-                        "/*.html",
-                        "/favicon.ico",
-                        "/**/*.html",
-                        "/**/*.js",
-                        "/swagger-resource/**",
-                        "v2/api-docs/**",
-                        "/v2/api-docs",
-                        "/swagger-resources/configuration/ui",
-                        "/swagger-resources",
-                        "/swagger-resources/configuration/security",
-                        "/swagger-ui.html",
-                        "/swagger-ui/swagger-ui.css"
-                )
+                .antMatchers(HttpMethod.GET, ArrayUtil.toArray(ignoreUrlsConfig.getUrls(), String.class))
                 .permitAll()
                 .antMatchers("/umsAdmin/login")
                 .permitAll()
@@ -83,40 +52,26 @@ public class SpringSecurityConfig {
                 .permitAll()
                 .anyRequest()
                 .authenticated();
+
         //禁用缓存
-        httpSecurity.headers().cacheControl();
+        httpSecurity.
+                headers().
+                cacheControl().
+                disable();
+
         //添加JWT filter
-        httpSecurity.addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
         //添加自定义未授权和登录结果返回
         httpSecurity.exceptionHandling()
                 .accessDeniedHandler(restfulAccessDeniedHandler)
                 .authenticationEntryPoint(restAuthenticationEntryPoint);
+
         return httpSecurity.build();
     }
 
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        //获取登录用户信息
-        return username -> {
-            AdminUserDetails admin = userAdminService.getAdminByUsername(username);
-            if (admin != null) {
-                return admin;
-            }
-            throw new UsernameNotFoundException("用户名或密码错误");
-        };
-    }
-
-
-    @Bean
-    public Filter jwtAuthenticationTokenFilter() {
-        return new JwtAuthenticationTokenFilter();
-    }
 
 
 }

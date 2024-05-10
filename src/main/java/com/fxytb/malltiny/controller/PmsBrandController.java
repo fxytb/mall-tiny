@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +38,8 @@ public class PmsBrandController {
             @ApiResponse(responseCode = "100", description = "暂无数据"),
             @ApiResponse(responseCode = "200", description = "品牌数据查询成功")
     })
-    private CommonResult<List<PmsBrandVo>> listAllPmsBrand() {
+    @PreAuthorize("hasAuthority('brand:listAll')")
+    public CommonResult<List<PmsBrandVo>> listAllPmsBrand() {
         return pmsBrandService.listAllPmsBrand();
     }
 
@@ -52,7 +54,8 @@ public class PmsBrandController {
             @ApiResponse(responseCode = "100", description = "暂无数据"),
             @ApiResponse(responseCode = "200", description = "品牌数据分页查询成功")
     })
-    private CommonResult<PageInfo<PmsBrandVo>> listPmsBrandByPage(@RequestBody @Validated @ApiParam(
+    @PreAuthorize("hasAuthority('brand:list')")
+    public CommonResult<PageInfo<PmsBrandVo>> listPmsBrandByPage(@RequestBody @Validated @ApiParam(
             value = "分页参数",
             required = true
     ) PageQuery<PmsBrandQueryParam> pageQuery) {
@@ -77,7 +80,7 @@ public class PmsBrandController {
             @ApiResponse(responseCode = "100", description = "暂无数据"),
             @ApiResponse(responseCode = "200", description = "品牌数据查询成功")
     })
-    private CommonResult<PmsBrandVo> listPmsBrandById(@RequestBody @Validated PmsBrandIdQueryParam idQueryParam) {
+    public CommonResult<PmsBrandVo> listPmsBrandById(@RequestBody @Validated PmsBrandIdQueryParam idQueryParam) {
         return pmsBrandService.listPmsBrandById(idQueryParam);
     }
 
@@ -88,7 +91,8 @@ public class PmsBrandController {
      * @return 操作信息
      */
     @PostMapping("/addPmsBrand")
-    private CommonResult<PmsBrandVo> addPmsBrand(@RequestBody @Validated PmsBrandAddParam addParam) {
+    @PreAuthorize("hasAuthority('brand:add')")
+    public CommonResult<PmsBrandVo> addPmsBrand(@RequestBody @Validated PmsBrandAddParam addParam) {
         return pmsBrandService.addPmsBrand(addParam);
     }
 
@@ -98,7 +102,8 @@ public class PmsBrandController {
      * @return 操作信息
      */
     @PostMapping("/deletePmsBrand")
-    private CommonResult<String> deletePmsBrand(@RequestBody @Validated PmsBrandDeleteParam deleteParam) {
+    @PreAuthorize("hasAuthority('brand:delete')")
+    public CommonResult<String> deletePmsBrand(@RequestBody @Validated PmsBrandDeleteParam deleteParam) {
         return pmsBrandService.deletePmsBrand(deleteParam);
     }
 
@@ -108,7 +113,8 @@ public class PmsBrandController {
      * @return 操作信息
      */
     @PostMapping("/updatePmsBrand")
-    private CommonResult<String> updatePmsBrand(@RequestBody @Validated PmsBrandUpdateParam updateParam) {
+    @PreAuthorize("hasAuthority('brand:update')")
+    public CommonResult<String> updatePmsBrand(@RequestBody @Validated PmsBrandUpdateParam updateParam) {
         return pmsBrandService.updatePmsBrand(updateParam);
     }
 

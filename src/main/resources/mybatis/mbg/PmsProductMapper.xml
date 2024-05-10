@@ -47,6 +47,60 @@
     <result column="detail_html" jdbcType="LONGVARCHAR" property="detailHtml" />
     <result column="detail_mobile_html" jdbcType="LONGVARCHAR" property="detailMobileHtml" />
   </resultMap>
+
+  <!--
+
+      @Id
+    private Long id;
+    @Field(type = FieldType.Keyword)
+    private String productSn;
+    private Long brandId;
+    @Field(type = FieldType.Keyword)
+    private String brandName;
+    private Long productCategoryId;
+    @Field(type = FieldType.Keyword)
+    private String productCategoryName;
+    private String pic;
+    @Field(analyzer = "ik_max_word", type = FieldType.Text)
+    private String name;
+    @Field(analyzer = "ik_max_word", type = FieldType.Text)
+    private String subTitle;
+    @Field(analyzer = "ik_max_word", type = FieldType.Text)
+    private String keywords;
+    private BigDecimal price;
+    private Integer sale;
+    private Integer newStatus;
+    private Integer recommandStatus;
+    private Integer stock;
+    private Integer promotionType;
+    private Integer sort;
+    @Field(type = FieldType.Nested)
+  -->
+
+  <resultMap id="EsPmsProductMap" type="com.fxytb.malltiny.model.po.elasticsearch.EsPmsProduct">
+    <id property="id" column="id"/>
+    <result property="productSn" column="product_sn"/>
+    <result property="brandId" column="brand_id"/>
+    <result property="brandName" column="brand_name"/>
+    <result property="productCategoryId" column="product_category_id"/>
+    <result property="productCategoryName" column="product_category_name"/>
+    <result property="pic" column="pic"/>
+    <result property="name" column="name"/>
+    <result property="subTitle" column="sub_title"/>
+    <result property="keywords" column="keywords"/>
+    <result property="price" column="price"/>
+    <result property="sale" column="sale"/>
+    <result property="newStatus" column="new_status"/>
+    <result property="recommandStatus" column="recommand_status"/>
+    <result property="stock" column="stock"/>
+    <result property="promotionType" column="promotion_type"/>
+    <result property="sort" column="sort"/>
+    <collection property="attributeValues"
+                resultMap="com.fxytb.malltiny.dao.mbg.PmsProductAttributeValueMapper.EsPmsProductAttributeValueMap"
+                columnPrefix="attr_"/>
+  </resultMap>
+
+
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -106,7 +160,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, brand_id, product_category_id, feight_template_id, product_attribute_category_id, 
+    id, brand_id, product_category_id, feight_template_id, product_attribute_category_id,
     name, pic, product_sn, delete_status, publish_status, new_status, recommand_status, 
     verify_status, sort, sale, price, promotion_price, gift_growth, gift_point, use_point_limit, 
     sub_title, original_price, stock, low_stock, unit, weight, preview_status, service_ids, 
@@ -147,7 +201,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -168,33 +222,33 @@
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into pms_product (brand_id, product_category_id, feight_template_id, 
-      product_attribute_category_id, name, pic, 
-      product_sn, delete_status, publish_status, 
-      new_status, recommand_status, verify_status, 
-      sort, sale, price, 
-      promotion_price, gift_growth, gift_point, 
-      use_point_limit, sub_title, original_price, 
-      stock, low_stock, unit, 
-      weight, preview_status, service_ids, 
-      keywords, note, album_pics, 
-      detail_title, promotion_start_time, promotion_end_time, 
-      promotion_per_limit, promotion_type, brand_name, 
-      product_category_name, description, detail_desc, 
+    insert into pms_product (brand_id, product_category_id, feight_template_id,
+      product_attribute_category_id, name, pic,
+      product_sn, delete_status, publish_status,
+      new_status, recommand_status, verify_status,
+      sort, sale, price,
+      promotion_price, gift_growth, gift_point,
+      use_point_limit, sub_title, original_price,
+      stock, low_stock, unit,
+      weight, preview_status, service_ids,
+      keywords, note, album_pics,
+      detail_title, promotion_start_time, promotion_end_time,
+      promotion_per_limit, promotion_type, brand_name,
+      product_category_name, description, detail_desc,
       detail_html, detail_mobile_html)
-    values (#{brandId,jdbcType=BIGINT}, #{productCategoryId,jdbcType=BIGINT}, #{feightTemplateId,jdbcType=BIGINT}, 
-      #{productAttributeCategoryId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{pic,jdbcType=VARCHAR}, 
-      #{productSn,jdbcType=VARCHAR}, #{deleteStatus,jdbcType=INTEGER}, #{publishStatus,jdbcType=INTEGER}, 
-      #{newStatus,jdbcType=INTEGER}, #{recommandStatus,jdbcType=INTEGER}, #{verifyStatus,jdbcType=INTEGER}, 
-      #{sort,jdbcType=INTEGER}, #{sale,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL}, 
-      #{promotionPrice,jdbcType=DECIMAL}, #{giftGrowth,jdbcType=INTEGER}, #{giftPoint,jdbcType=INTEGER}, 
-      #{usePointLimit,jdbcType=INTEGER}, #{subTitle,jdbcType=VARCHAR}, #{originalPrice,jdbcType=DECIMAL}, 
-      #{stock,jdbcType=INTEGER}, #{lowStock,jdbcType=INTEGER}, #{unit,jdbcType=VARCHAR}, 
-      #{weight,jdbcType=DECIMAL}, #{previewStatus,jdbcType=INTEGER}, #{serviceIds,jdbcType=VARCHAR}, 
-      #{keywords,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, #{albumPics,jdbcType=VARCHAR}, 
-      #{detailTitle,jdbcType=VARCHAR}, #{promotionStartTime,jdbcType=TIMESTAMP}, #{promotionEndTime,jdbcType=TIMESTAMP}, 
-      #{promotionPerLimit,jdbcType=INTEGER}, #{promotionType,jdbcType=INTEGER}, #{brandName,jdbcType=VARCHAR}, 
-      #{productCategoryName,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR}, #{detailDesc,jdbcType=LONGVARCHAR}, 
+    values (#{brandId,jdbcType=BIGINT}, #{productCategoryId,jdbcType=BIGINT}, #{feightTemplateId,jdbcType=BIGINT},
+      #{productAttributeCategoryId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{pic,jdbcType=VARCHAR},
+      #{productSn,jdbcType=VARCHAR}, #{deleteStatus,jdbcType=INTEGER}, #{publishStatus,jdbcType=INTEGER},
+      #{newStatus,jdbcType=INTEGER}, #{recommandStatus,jdbcType=INTEGER}, #{verifyStatus,jdbcType=INTEGER},
+      #{sort,jdbcType=INTEGER}, #{sale,jdbcType=INTEGER}, #{price,jdbcType=DECIMAL},
+      #{promotionPrice,jdbcType=DECIMAL}, #{giftGrowth,jdbcType=INTEGER}, #{giftPoint,jdbcType=INTEGER},
+      #{usePointLimit,jdbcType=INTEGER}, #{subTitle,jdbcType=VARCHAR}, #{originalPrice,jdbcType=DECIMAL},
+      #{stock,jdbcType=INTEGER}, #{lowStock,jdbcType=INTEGER}, #{unit,jdbcType=VARCHAR},
+      #{weight,jdbcType=DECIMAL}, #{previewStatus,jdbcType=INTEGER}, #{serviceIds,jdbcType=VARCHAR},
+      #{keywords,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, #{albumPics,jdbcType=VARCHAR},
+      #{detailTitle,jdbcType=VARCHAR}, #{promotionStartTime,jdbcType=TIMESTAMP}, #{promotionEndTime,jdbcType=TIMESTAMP},
+      #{promotionPerLimit,jdbcType=INTEGER}, #{promotionType,jdbcType=INTEGER}, #{brandName,jdbcType=VARCHAR},
+      #{productCategoryName,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR}, #{detailDesc,jdbcType=LONGVARCHAR},
       #{detailHtml,jdbcType=LONGVARCHAR}, #{detailMobileHtml,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.fxytb.malltiny.model.po.mbg.PmsProduct">
@@ -458,6 +512,74 @@
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
+  </select>
+  <!--
+
+      <id property="id" column="attr_product_attribute_value_id"/>
+    <result property="productId" column="attr_product_id"/>
+    <result property="productAttributeId" column="attr_product_attribute_id"/>
+    <result property="value" column="attr_value"/>
+    <result property="name" column="attr_name"/>
+
+  -->
+  <select id="queryAllEsPmsProduct" resultMap="EsPmsProductMap">
+    select p.id,
+           p.product_sn,
+           p.brand_id,
+           p.brand_name,
+           p.product_category_id,
+           p.product_category_name,
+           p.pic,
+           p.name,
+           p.sub_title,
+           p.keywords,
+           p.price,
+           p.sale,
+           p.new_status,
+           p.recommand_status,
+           p.stock,
+           p.promotion_type,
+           p.sort,
+           pav.id as attr_product_attribute_value_id,
+           p.id as attr_product_id,
+           pa.id as attr_product_attribute_id,
+           pav.value as attr_value,
+           pa.name as attr_name,
+           pa.type as attr_type
+    from pms_product p
+           left join pms_product_attribute_value pav on p.id = pav.product_id
+           left join pms_product_attribute pa on pav.product_attribute_id = pa.id
+  </select>
+  <select id="queryEsPmsProductById" resultMap="EsPmsProductMap">
+    select p.id,
+           p.product_sn,
+           p.brand_id,
+           p.brand_name,
+           p.product_category_id,
+           p.product_category_name,
+           p.pic,
+           p.name,
+           p.sub_title,
+           p.keywords,
+           p.price,
+           p.sale,
+           p.new_status,
+           p.recommand_status,
+           p.stock,
+           p.promotion_type,
+           p.sort,
+           pav.id as attr_product_attribute_value_id,
+           p.id as attr_product_id,
+           pa.id as attr_product_attribute_id,
+           pav.value as attr_value,
+           pa.name as attr_name,
+           pa.type as attr_type
+    from pms_product p
+           left join pms_product_attribute_value pav on p.id = pav.product_id
+           left join pms_product_attribute pa on pav.product_attribute_id = pa.id
+    <where>
+      p.id = #{id}
+    </where>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
     update pms_product

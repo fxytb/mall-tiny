@@ -65,7 +65,7 @@ public class CommonResult<T> {
                 .successful(false)
                 .message(message)
                 .data(null)
-                .code(400)
+                .code(500)
                 .messageType("error")
                 .build();
     }

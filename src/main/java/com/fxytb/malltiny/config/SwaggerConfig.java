@@ -63,6 +63,7 @@ public class SwaggerConfig {
         List<SecurityContext> result = new ArrayList<>();
         result.add(getContextByPath("/pmsBrand/.*"));
         result.add(getContextByPath("/redis/.*"));
+        result.add(getContextByPath("/product/.*"));
         return result;
     }
 
