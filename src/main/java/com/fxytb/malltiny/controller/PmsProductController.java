@@ -3,12 +3,16 @@ package com.fxytb.malltiny.controller;
 import com.fxytb.malltiny.common.page.PageQuery;
 import com.fxytb.malltiny.common.result.CommonResult;
 import com.fxytb.malltiny.model.param.EsPmsProductQueryParam;
+import com.fxytb.malltiny.model.po.elasticsearch.EsBlank;
+import com.fxytb.malltiny.model.po.elasticsearch.EsPmsBrand;
 import com.fxytb.malltiny.model.po.elasticsearch.EsPmsProduct;
 import com.fxytb.malltiny.sevice.EsPmsProductService;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,12 +90,8 @@ public class PmsProductController {
 
     @PostMapping("/queryPageByCondition")
     @ApiOperation(value = "es商品分页查询", notes = "es商品分页查询")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "pageQuery", value = "es商品分页查询")
-    })
-    @ApiResponse(code = 200,message = "es商品分页查询成功")
-    public CommonResult<PageInfo<EsPmsProduct>> queryPageByCondition(@RequestBody @Validated PageQuery<EsPmsProductQueryParam> pageQuery) {
-        return esPmsProductService.queryPageByCondition(pageQuery);
+    public CommonResult<SearchHits<EsBlank>> queryPageByCondition() {
+        return esPmsProductService.queryPageByCondition();
     }
 
 }
